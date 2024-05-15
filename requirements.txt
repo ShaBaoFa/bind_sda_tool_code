@@ -1,0 +1,10 @@
+beautifulsoup4==4.12.3
+fake_useragent==1.5.1
+openpyxl==3.1.2
+protobuf==3.20.3
+pycryptodome==3.20.0
+PyQt5==5.15.10
+PyQt5_sip==12.13.0
+Requests==2.31.0
+rsa==4.9
+urllib3==2.2.1
