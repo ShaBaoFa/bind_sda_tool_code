@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.10 (bind_sda)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (bind_sda)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (bind_sda_tool_code)" project-jdk-type="Python SDK" />
 </project>

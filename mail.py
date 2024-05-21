@@ -2,9 +2,11 @@ import time
 import re
 import poplib
 from email.parser import BytesParser
+import ssl
+import certifi
 
 # 邮件服务器配置
-check_interval = 5  # 检查间隔（秒）
+check_interval = 1  # 检查间隔（秒）
 
 
 class SteamMail:
@@ -22,7 +24,9 @@ class SteamMail:
             print(self.mail_acc)
             print(self.mail_password)
             # 连接到POP3邮件服务器
-            mail = poplib.POP3_SSL(self.mail_server)
+            print('get_pop3_ssl_linking....')
+            mail = poplib.POP3_SSL('outlook.office365.com')
+            print('连接到POP3邮件服务器')
             mail.user(self.mail_acc)
             mail.pass_(self.mail_password)
             num_messages = len(mail.list()[1])

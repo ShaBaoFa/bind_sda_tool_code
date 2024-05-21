@@ -227,8 +227,11 @@ class SteamAuth:
                 response = requests.post(url, params=params, headers=self.headers, timeout=3)
                 response = CTwoFactor_FinalizeAddAuthenticator_Response.FromString(response.content)
                 print(response)
-                if response:
-                    return response.success
+                if response.success:
+                    return True
+                else:
+                    with open('bferror.txt', 'a', encoding='utf-8') as file:
+                        file.write(f"{self.username}----{self.password}----{self.email}----{self.email_pwd}\n")
             except RequestException as e:
                 attempt += 1
                 logging.error(f"Function : add_authenticator ,Attempt {attempt} failed with exception: {e}")
@@ -292,11 +295,25 @@ class SteamAuth:
 
     def save_ma_file(self):
         # 定义保存文件的路径（项目根目录）和文件名
-        directory = 'bind_file'
+        directory = 'steam_id_maFiles'
         if not os.path.exists(directory):
             os.makedirs(directory)
 
         file_name = f"{self.steam_id}.maFile"
+        file_path = os.path.join(directory, file_name)
+
+        # 将 self.ma_file 的内容保存为 JSON 文件
+        with open(file_path, 'w') as file:
+            json.dump(self.ma_file.to_dict(), file, indent=4)
+
+        print(f"文件已保存到: {file_path}")
+
+        # 定义保存文件的路径（项目根目录）和文件名
+        directory = 'steam_account_maFiles'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = f"{self.username}.maFile"
         file_path = os.path.join(directory, file_name)
 
         # 将 self.ma_file 的内容保存为 JSON 文件
