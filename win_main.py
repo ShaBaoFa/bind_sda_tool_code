@@ -66,8 +66,10 @@ class Worker(QThread, QObject):
 
     def login_task(self, account, password, email, email_pwd, row_index):
         self.acc = SteamAuth(account, password, email, email_pwd)
+        print('get_rsa_public_key....')
         rsa_state, rsa_re = self.acc.get_rsa_public_key()
         if rsa_state:
+            print('get_rsa_public_key success')
             encode_password = self.acc.rsa_encrypt(rsa_re.publickey_mod, rsa_re.publickey_exp)
             send_state, send_re = self.acc.send_encode_request(encode_password, rsa_re.timestamp)
             if send_state:
@@ -224,9 +226,6 @@ class Ui_MainWindow(QMainWindow, Ui_task_MainWindow):
         invertSelectionAction = menu.addAction("反选")
         invertSelectionAction.triggered.connect(self.invertSelection)
 
-        # 选中掉落数量大于0的账户
-        invertSelectionAction = menu.addAction("选中掉落数量大于0的账户")
-        invertSelectionAction.triggered.connect(self.select_num_gt_0)
 
         # 添加删除选中行动作
         deleteSelectedAction = menu.addAction("删除选中行")
@@ -242,14 +241,6 @@ class Ui_MainWindow(QMainWindow, Ui_task_MainWindow):
     def selectAll(self):
         for i in range(self.accTable.rowCount()):
             self.accTable.item(i, 0).setCheckState(Qt.Checked)
-
-    def select_num_gt_0(self):
-        for i in range(self.accTable.rowCount()):
-            num = self.get_table_item(i, 7)
-            if num and int(num) > 0:
-                self.accTable.item(i, 0).setCheckState(Qt.Checked)
-            else:
-                self.accTable.item(i, 0).setCheckState(Qt.Unchecked)
 
     def invertSelection(self):
         for i in range(self.accTable.rowCount()):
