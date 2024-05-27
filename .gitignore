@@ -1,6 +1,7 @@
 # bind_file
-bind_file/
-
+steam_account_maFiles/*.maFile
+steam_id_maFiles/*.maFile
+*.txt
 ### PythonVanilla template
 # Byte-compiled / optimized / DLL files
 __pycache__/
