@@ -37,8 +37,10 @@ class SteamMail:
 
     def get_steam_code(self):
         verification_code = None
+        attempt = 0
+        max_attempts = 6
         try:
-            while True:
+            while attempt < max_attempts:
                 # 连接到POP3邮件服务器
                 mail = poplib.POP3_SSL(self.mail_server)
                 mail.user(self.mail_acc)
@@ -67,35 +69,19 @@ class SteamMail:
                         if verification_code:
                             print(f"Found verification code: {verification_code}")
                             break
+                        else:
+                            print("No verification code found")
                     self.last_email_count = num_messages
                 mail.quit()
                 if verification_code:
-                    return verification_code
+                    return True, verification_code
                 print("No new emails. Waiting for new emails...")
                 time.sleep(check_interval)
+                attempt += 1
+            return False, None
         except Exception as e:
             print(f"Error: {e}")
-        try:
-            # 连接到POP3邮件服务器
-            mail = poplib.POP3_SSL(self.mail_server)
-            mail.user(self.mail_acc)
-            mail.pass_(self.mail_password)
-
-            # 读取最新的一封邮件
-            response, lines, octets = mail.retr(num_messages)
-            msg_data = b'\r\n'.join(lines)
-            msg = BytesParser().parsebytes(msg_data)
-
-            # 打印 邮件内容
-            for part in msg.walk():
-                if part.get_content_type() == 'text/plain':
-                    email_content = part.get_payload(decode=True).decode(part.get_content_charset())
-                else:
-                    continue
-            mail.quit()
-
-        except poplib.error_proto as e:
-            print(f"POP3 error: {e}")
+            return False, None
 
     def find_verification_url(self, email_content):
         # 使用正则表达式提取验证电子邮箱的URL

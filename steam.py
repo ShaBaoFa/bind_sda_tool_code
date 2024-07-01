@@ -184,7 +184,7 @@ class SteamAuth:
         max_attempts = 5
         while attempt < max_attempts:
             try:
-                response = requests.post(url, params=params, headers=self.headers)
+                response = self.session.post(url, params=params, headers=self.headers)
                 # if response.status_code != 200:
                 #     return False, "网络状态返回错误"
                 eresult = response.headers['X-eresult']  # 打印响应头部信息
@@ -224,21 +224,19 @@ class SteamAuth:
         max_attempts = 5
         while attempt < max_attempts:
             try:
-                response = requests.post(url, params=params, headers=self.headers, timeout=3)
+                response = self.session.post(url, params=params, headers=self.headers, timeout=3)
                 response = CTwoFactor_FinalizeAddAuthenticator_Response.FromString(response.content)
                 print(response)
                 if response.success:
                     return True
                 else:
-                    with open('bferror.txt', 'a', encoding='utf-8') as file:
-                        file.write(f"{self.username}----{self.password}----{self.email}----{self.email_pwd}\n")
+                    return False
             except RequestException as e:
                 attempt += 1
                 logging.error(f"Function : add_authenticator ,Attempt {attempt} failed with exception: {e}")
                 if attempt == max_attempts:
                     # 最后一次尝试失败，返回False和异常信息
                     return False, str(e)
-
     def login_email(self):
         return True
 
@@ -275,7 +273,7 @@ class SteamAuth:
         max_attempts = 5
         while attempt < max_attempts:
             try:
-                response = requests.post(url, params=params, headers=self.headers, timeout=3)
+                response = self.session.post(url, params=params, headers=self.headers, timeout=3)
                 response = CTwoFactor_AddAuthenticator_Response.FromString(response.content)
                 print(response)
                 if response:
@@ -322,6 +320,35 @@ class SteamAuth:
 
         print(f"文件已保存到: {file_path}")
 
+    def save_updated_ma_file(self,dic):
+        # 定义保存文件的路径（项目根目录）和文件名
+        directory = 'update_steam_id_maFiles'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = f"{self.steam_id}.maFile"
+        file_path = os.path.join(directory, file_name)
+
+        # 将 self.ma_file 的内容保存为 JSON 文件
+        with open(file_path, 'w') as file:
+            json.dump(dic, file, indent=4)
+
+        print(f"文件已保存到: {file_path}")
+
+        # 定义保存文件的路径（项目根目录）和文件名
+        directory = 'update_steam_account_maFiles'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = f"{self.username}.maFile"
+        file_path = os.path.join(directory, file_name)
+
+        # 将 self.ma_file 的内容保存为 JSON 文件
+        with open(file_path, 'w') as file:
+            json.dump(dic, file, indent=4)
+
+        print(f"文件已保存到: {file_path}")
+
     '''
     获取token
     '''
@@ -355,5 +382,29 @@ class SteamAuth:
                     return False, str(e)
 
     def get_mail_code(self):
-        code = self.mail.get_steam_code()
-        return True, code
+        res, code = self.mail.get_steam_code()
+        return res, code
+
+    def update_ma_file(self):
+        # 读取文件内容
+        # 定义保存文件的路径（项目根目录）和文件名
+        directory = 'steam_id_maFiles'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        file_name = f"{self.steam_id}.maFile"
+        file_path = os.path.join(directory, file_name)
+        # 获取file_path 中的json
+        with open(file_path, 'r') as file:
+            js = file.read()
+            dic = json.loads(js)
+        # 修改dic中的Session内容
+        dic['Session'] = {
+            "SteamID": self.steam_id,
+            "AccessToken": self.access_token,
+            "RefreshToken": self.refresh_token,
+            "SessionID": self.session_id
+        }
+        self.save_updated_ma_file(dic)
+        pass
+

@@ -45,11 +45,11 @@ def generate_twofactor_code_for_time(shared_secret, aligned_time):
 def generator_code(steam_id, user_name):
     # 在控制器中打印出steam_id和user_name
     if sys.platform.startswith('darwin'):
-        steam_id_path = fr'./maFiles/{steam_id}.maFile'
-        user_name_path = fr'./maFiles/{user_name}.maFile'
+        steam_id_path = fr'./steam_id_maFiles/{steam_id}.maFile'
+        user_name_path = fr'./steam_id_maFiles/{user_name}.maFile'
     elif sys.platform.startswith('win'):
-        steam_id_path = fr'.\maFiles\{steam_id}.maFile'
-        user_name_path = fr'.\maFiles\{user_name}.maFile'
+        steam_id_path = fr'.\steam_id_maFiles\{steam_id}.maFile'
+        user_name_path = fr'.\steam_id_maFiles\{user_name}.maFile'
     # 从文件中读入shared_secrets
     if steam_id and os.path.exists(steam_id_path):
         with open(steam_id_path) as fn:
